@@ -164,9 +164,44 @@ public class RobotMotion {
 			System.out.println("0 waypoints found");
 		}
 	}
-
+	
 	/**
-	 * Performs ptp motion using x, y. z and euler angles.</p>
+	 * Performs ptp motion for a joint_config </br>
+	 * @param joint_states
+	 */
+	public void executePtpMotionFromJointConfig(double[] joint_state)
+	{
+		System.out.println("Executing ptp motion for a given joint config..."); 
+		try
+		{
+			if (joint_state[0]<-2.96706+jointsBoundTol){joint_state[0]  = -2.96706+jointsBoundTol;} 
+			else if (joint_state[0]>2.96706-jointsBoundTol){joint_state[0]  = 2.96706-jointsBoundTol;};
+			if (joint_state[1]<-2.0944+jointsBoundTol){joint_state[1]  = -2.0944+jointsBoundTol;} 
+			else if (joint_state[1]>2.0944-jointsBoundTol){joint_state[1]  = 2.0944-jointsBoundTol;};
+			if (joint_state[2]<-2.96706+jointsBoundTol){joint_state[2]  = -2.96706+jointsBoundTol;} 
+			else if (joint_state[2]>2.96706-jointsBoundTol){joint_state[2]  = 2.96706-jointsBoundTol;};
+			if (joint_state[3]<-2.0944+jointsBoundTol){joint_state[3]  = -2.0944+jointsBoundTol;}	
+			else if (joint_state[3]>2.0944-jointsBoundTol){joint_state[3]  = 2.0944-jointsBoundTol;};
+			if (joint_state[4]<-2.96706+jointsBoundTol){joint_state[4]  = -2.96706+jointsBoundTol;} 
+			else if (joint_state[4]>2.96706-jointsBoundTol){joint_state[4]  = 2.96706-jointsBoundTol;};
+			if (joint_state[5]<-2.0944+jointsBoundTol){joint_state[5]  = -2.0944+jointsBoundTol;}	
+			else if (joint_state[5]>2.0944-jointsBoundTol){joint_state[5]  = 2.0944-jointsBoundTol;};
+			if (joint_state[6]<-3.05433+jointsBoundTol){joint_state[6]  = -3.05433+jointsBoundTol;} 
+			else if (joint_state[6]>3.05433-jointsBoundTol){joint_state[6]  = 3.05433-jointsBoundTol;};
+			
+			tcp.move( ptp( joint_state[0],joint_state[1],joint_state[2],joint_state[3],joint_state[4],joint_state[5],joint_state[6] )
+						.setJointVelocityRel(robSpeed).setMode(impedanceMode));
+		}
+		catch(Exception e)
+		{
+			System.out.println(" Motion is not possible at - "); 
+			System.out.println(joint_state[0]+","+joint_state[1]+","+joint_state[2]+","+joint_state[3]+","+joint_state[4]+","+joint_state[5]+
+					","+ joint_state[5]+","+joint_state[6]); 
+		}
+	}
+		
+	/**
+	 * Performs ptp motion using x, y, z and euler angles ZYX.</p>
 	 * NOTE: To define the frame - </br>
 	 * Frame F = new Frame();</br>
 	 * F = getApplicationData().getFrame(<PoseFrame String>).copyWithRedundancy(); </br> 
@@ -211,6 +246,101 @@ public class RobotMotion {
 	}	
 	
 	/**
+	 * Performs ptp motion for a cartesian state using x, y, z and euler angles ZYX.</p>
+	 * NOTE: To define the frame - </br>
+	 * Frame F = new Frame();</br>
+	 * F = getApplicationData().getFrame(<PoseFrame String>).copyWithRedundancy(); </br> 
+	 * ...This is used to get the redundancy value for motion.</br>
+	 * @param cartesian_state
+	 * @param F
+	*/
+	public void executePtpMotionFromCartesianConfig(double[] cartesian_state, Frame F)
+	{
+		// NOTE: To define the frame - 
+		////////////////////////////////////////////////////		
+		// Frame F = new Frame();
+		// F = getApplicationData().getFrame(<PoseFrame String>).copyWithRedundancy();  ...This is used to get the redundancy value for motion.
+		////////////////////////////////////////////////////
+		
+		System.out.println("Executing ptp motion for a given cartesian waypoint..."); 
+		try
+    	{
+    		F.setX(cartesian_state[0]);
+	    	F.setY(cartesian_state[1]);
+	    	F.setZ(cartesian_state[2]);
+	    	F.setAlphaRad(cartesian_state[3]);
+	    	F.setBetaRad(cartesian_state[4]);
+	    	F.setGammaRad(cartesian_state[5]);
+	    	tcp.move(ptp(F).setJointVelocityRel(robSpeed).setMode(impedanceMode));
+    	}
+    	catch(Exception e)
+    	{
+			System.out.println(" Motion is not possible"); 
+    	}
+	}     	
+
+	/**
+	 * Performs ptp motion using x, y, z and euler angles ZYX.</p>
+	 * @param cartesian_config
+	 */
+	public void executePtpMotionFromCartesianConfig(ArrayList<double[]> cartesian_config)
+	{
+		// NOTE: To define the frame - 
+		////////////////////////////////////////////////////		
+		// Frame F = new Frame();
+		// F = getApplicationData().getFrame(<PoseFrame String>).copyWithRedundancy();  ...This is used to get the redundancy value for motion.
+		////////////////////////////////////////////////////
+		
+		int N = cartesian_config.size();
+        if (N != 0)
+        {
+        	System.out.println("Executing ptp motion from cartesian waypoints..."); 
+        	try
+        	{
+	        	for (double [] cartesian_state : cartesian_config) 
+	        	{
+	        		Frame F = new Frame(cartesian_state[0],cartesian_state[1],cartesian_state[2],
+	        							cartesian_state[3],cartesian_state[4],cartesian_state[5]);
+	        		tcp.move(ptp(F).setJointVelocityRel(robSpeed).setMode(impedanceMode));
+	        	}
+        	}
+        	catch(Exception e)
+        	{
+				System.out.println(" Motion is not possible"); 
+        	}
+    	}
+        else
+        {
+        	System.out.println("0 waypoints found");
+        }
+	}	
+	
+	/**
+	 * Performs ptp motion for a cartesian config using x, y, z and euler angles ZYX.</p>
+	 * @param cartesian_config
+	 */
+	public void executePtpMotionFromCartesianConfig(double[] cartesian_state)
+	{
+		// NOTE: To define the frame - 
+		////////////////////////////////////////////////////		
+		// Frame F = new Frame();
+		// F = getApplicationData().getFrame(<PoseFrame String>).copyWithRedundancy();  ...This is used to get the redundancy value for motion.
+		////////////////////////////////////////////////////
+		
+		System.out.println("Executing ptp motion for a given cartesian waypoint..."); 
+    	try
+    	{
+        		Frame F = new Frame(cartesian_state[0],cartesian_state[1],cartesian_state[2],
+        							cartesian_state[3],cartesian_state[4],cartesian_state[5]);
+        		tcp.move(ptp(F).setJointVelocityRel(robSpeed).setMode(impedanceMode));   	
+    	}
+    	catch(Exception e)
+    	{
+			System.out.println(" Motion is not possible"); 
+    	}
+	}
+	
+	/**
 	 * Performs spline motion using joint angles.</p>
 	 * @param joint_config
 	*/
@@ -240,7 +370,13 @@ public class RobotMotion {
 				if (joint_state[6]<-3.05433+jointsBoundTol){joint_state[6]  = -3.05433+jointsBoundTol;} 
 				else if (joint_state[6]>3.05433-jointsBoundTol){joint_state[6]  = 3.05433-jointsBoundTol;};
 				
-				joint = new JointPosition(joint_state[0],joint_state[1],joint_state[2],joint_state[3],joint_state[4],joint_state[5],joint_state[6]); 	
+				joint = new JointPosition(joint_state[0],
+											joint_state[1],
+											joint_state[2],
+											joint_state[3],
+											joint_state[4],
+											joint_state[5],
+											joint_state[6]); 	
 				path[idx++] = new PTP(joint);
 			}
 			SplineJP curve = new SplineJP(path);
@@ -260,7 +396,7 @@ public class RobotMotion {
 	}
 
 	/**
-	 * Performs spline motion using x, y. z and euler angles.</p>
+	 * Performs spline motion using x, y, z and euler angles ZYX.</p>
 	 * NOTE: To define the frame - </br>
 	 * Frame F = new Frame();</br>
 	 * F = getApplicationData().getFrame(<PoseFrame String>).copyWithRedundancy(); </br> 
@@ -293,6 +429,43 @@ public class RobotMotion {
 	        	F[idx].setBetaRad(cartesian_state[4]);
 	        	F[idx].setGammaRad(cartesian_state[5]);
 	        	path[idx]=new SPL(F[idx]);
+	        	idx++;
+			}
+			Spline curve = new Spline(path);
+			try
+			{
+				tcp.move( curve.setJointVelocityRel(robSpeed).setMode(impedanceMode) );		
+				
+			}
+        	catch(Exception e)
+        	{
+				System.out.println(" Motion is not possible"); 
+        	}
+		}
+		else
+		{
+			System.out.println("0 waypoints found");
+		}
+	}	
+	
+	/**
+	 * Performs spline motion using x, y, z and euler angles ZYX.</p>
+	 * @param cartesian_config
+	*/
+	public void executeSplineMotionFromCartesianConfig(ArrayList<double[]> cartesian_config)
+	{		
+		int N = cartesian_config.size();
+		if (N != 0)
+		{
+			System.out.println("Executing spline motion from cartesian waypoints..."); 
+			Frame F[] = new Frame[N];
+			SPL[] path = new SPL[N];
+			int idx = 0;
+			for (double[] cartesian_state : cartesian_config) 
+			{
+				F[idx] = new Frame(cartesian_state[0], cartesian_state[1], cartesian_state[2], 
+									cartesian_state[3], cartesian_state[4], cartesian_state[5]);
+				path[idx]=new SPL(F[idx]);
 	        	idx++;
 			}
 			Spline curve = new Spline(path);
@@ -400,6 +573,45 @@ public class RobotMotion {
 				F[idx].setBetaRad(cartesian_config.get(i)[4]);
 				F[idx].setGammaRad(cartesian_config.get(i)[5]);
 	        	path[idx]=new SPL(F[idx]);
+	        	idx++;
+			}
+			Spline curve = new Spline(path);
+			try
+			{
+				MyMotion = tcp.moveAsync(curve.setJointVelocityRel(robSpeed).setMode(impedanceMode));
+			}
+        	catch(Exception e)
+        	{
+				System.out.println(" Motion is not possible"); 
+        	}
+		}
+		else
+		{
+			System.out.println("0 waypoints found");
+		}
+		return MyMotion;
+	}
+	
+	/**
+	 * Performs asynchronous spline motion using x, y. z and euler angles.</p>
+	 * @param cartesian_config
+	 * @param traj_start_pt
+	*/
+	public IMotionContainer executeAsyncSplineMotionFromCartesianConfig(ArrayList<double[]> cartesian_config, int traj_start_pt)
+	{
+		IMotionContainer MyMotion = null;
+		int N = cartesian_config.size();
+		Frame F[] = new Frame[N-traj_start_pt];
+		if (N != 0)
+		{
+			System.out.println("Executing asynchronized spline motion from cartesian waypoints..."); 
+			SPL[] path = new SPL[N-traj_start_pt];
+			int idx = 0;
+			for (int i = traj_start_pt;i<N;i++)
+			{
+				F[idx] = new Frame(cartesian_config.get(i)[0], cartesian_config.get(i)[1], cartesian_config.get(i)[2],
+									cartesian_config.get(i)[3], cartesian_config.get(i)[4], cartesian_config.get(i)[5]);
+				path[idx]=new SPL(F[idx]);
 	        	idx++;
 			}
 			Spline curve = new Spline(path);
