@@ -138,7 +138,7 @@ public class ReadWriteUtilities {
 	 * Reads data from file and store into the 2D ArrayList of primitive double type.</p>
 	 * @param file_name
 	 */
-	public static ArrayList<double[]> readDilimiterFileDouble(String file_name)
+	public static ArrayList<double[]> readDelimiterFileDouble(String file_name)
 	{
 		File file = new File(file_name);
 		ArrayList<double[]> ls = new ArrayList<double[]>();
@@ -174,7 +174,7 @@ public class ReadWriteUtilities {
 	 * Reads data from file and store into the 2D ArrayList of primitive integer type.</p>
 	 * @param file_name
 	 */
-	public static ArrayList<int[]> readDilimiterFileInt(String file_name)
+	public static ArrayList<int[]> readDelimiterFileInt(String file_name)
 	{
 		File file = new File(file_name);
 		ArrayList<int[]> ls = new ArrayList<int[]>();
@@ -210,7 +210,7 @@ public class ReadWriteUtilities {
 	 * Reads data from file and store into the 2D ArrayList of String type.</p>
 	 * @param file_name
 	 */
-	public static ArrayList<String[]> readDilimiterFileString(String file_name)
+	public static ArrayList<String[]> readDelimiterFileString(String file_name)
 	{
 		File file = new File(file_name);
 		ArrayList<String[]> ls = new ArrayList<String[]>();
