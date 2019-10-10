@@ -80,7 +80,6 @@ public class test_code1 extends RoboticsAPIApplication {
 			contactProbingExecution m = new contactProbingExecution(lBR_iiwa_7_R800_1, tool_tip, joint_config, cartesian_config);
 			Frame F = new Frame();
 			F = getApplicationData().getFrame("/P1").copyWithRedundancy();
-	//		m.setImpedance(mode);
 			m.setRecordFrequency(40);
 			m.performCompleteContactBasedDataCollection(F, grp_idx, write_file_name);
 			tool_tip.move(ptp(getApplicationData().getFrame("/P1")).setJointVelocityRel(0.5));
