@@ -68,9 +68,9 @@ public class test_code2 extends RoboticsAPIApplication {
 		// going to home position 
 		tool_tip.move(ptp(getApplicationData().getFrame("/P1")).setJointVelocityRel(0.5));
 		
-		TcpipCommunication tcp = new TcpipCommunication(ip_address, port);
+		TcpipComm tcp = new TcpipComm(ip_address, port, "server");
 		tcp.establishConnection();
-		String data = tcp.getClientRequest();
+		String data = tcp.getStringRequest();
 		
 		if (data.equals("execute"))
 		{
