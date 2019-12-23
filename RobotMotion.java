@@ -1,3 +1,6 @@
+// File 	: contactProbingExecution.java
+// Author 	: Aniruddha Shembekar, Research Engineer, University of Southern California
+
 package utilities;
 
 
